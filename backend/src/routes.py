@@ -1,12 +1,15 @@
 from fastapi import APIRouter, HTTPException, status
-from fastapi.responses import RedirectResponse
 from starlette.requests import Request
 from src.config import oauth
 from src.schemas import PullRequests
 from os import getenv
 from github import Github, GithubException
+from itertools import islice
 
-FILE_MAX_SIZE = 1024 * 1024 # 1 Mega byte
+# small limits to get the best out of AI
+MAX_NUM_OF_FILES = 10
+MAX_SIZE_OF_ORIGINAL_FILE = 4 * 1024 # 4 Kilo byte
+MAX_CHANGED_LINES = 100
 
 router = APIRouter()
 
@@ -22,7 +25,7 @@ async def auth(request: Request):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) 
 
-# TODO: limit size of added lines commits
+# TODO: return size errors to user
 @router.post('/pull-requests')
 def pull_request(data: PullRequests):
     github = Github(login_or_token=data.access_token)
@@ -37,26 +40,25 @@ def pull_request(data: PullRequests):
     except GithubException as e:
         return {"error": "Invalid PR number"}
 
-    commits = pr.get_commits()
+    pr_body = pr.body
+    files = list(islice(pr.get_files(), MAX_NUM_OF_FILES))
+    head_sha = pr.head.sha
 
-    for commit in commits:
-        files = commit.files
-        for file in files:
-            filename = file.filename
-            try:
-                file_meta_data = repo.get_contents(filename, ref=commit.sha)
-                if file_meta_data.size > FILE_MAX_SIZE:
-                    print(f"Too big File: {filename}")
-                    continue
-                contents = file_meta_data.decoded_content
-            except GithubException as e:
-                print(f"Error fetching content of {filename}: {e}")
-                continue
+    for file in files:
+        filename = file.filename
+        if file.additions + file.deletions > MAX_CHANGED_LINES:
+            print(f"Too big file change")
+            continue
+        diffs = file.patch
 
-            added_content = file.patch
+        file_meta_data = repo.get_contents(filename, ref=head_sha)
+        if file_meta_data.size > MAX_SIZE_OF_ORIGINAL_FILE:
+            print(f"Too big File: {filename}")
+            continue
+        content = file_meta_data.decoded_content
 
-            print("filename ", filename)
-            print("contents")
-            print(contents)
-            print("added_content")
-            print(added_content)
+        analyze(filename, diffs, content, pr_body) 
+
+# TODO: connect to the LLM API to analyze
+def analyze(filename, diffs, content, pr_body):
+    pass
