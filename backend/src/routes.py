@@ -4,7 +4,6 @@ from src.config import oauth
 from src.schemas import PullRequests
 from os import getenv
 from github import Github, GithubException
-from itertools import islice
 import google.generativeai as genai
 
 # configurable limits
@@ -23,7 +22,7 @@ async def github_login(request: Request):
     return await oauth.github.authorize_redirect(request, getenv('CALLBACK_URL'))
 
 @router.get('/auth')
-async def token_auth(request: Request) -> str:
+async def token_auth(request: Request) -> dict:
     try:
         token = await oauth.github.authorize_access_token(request)
         return token
@@ -58,7 +57,7 @@ async def pull_request(websocket: WebSocket):
         socketErr(websocket, "Invalid PR number")
         return
 
-    files = list(islice(pr.get_files(), MAX_NUM_OF_FILES))
+    files = pr.get_files()[: MAX_NUM_OF_FILES]
 
     chat_session = model.start_chat()
     chat_session.send_message(f"My Repo Received A Pull Request with the following body {pr.body}, i am going to send you the files one by one to analyze them for any bugs, errors or incorrect implementations of the ideas provided in Pull Request Body")
