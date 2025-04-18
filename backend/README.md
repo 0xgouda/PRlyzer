@@ -43,10 +43,8 @@ Client should keep the connection open to receive messages until it's closed by 
 
 ### response
 ```json
-Success: 
-{"filename": ..., "analysis": ...}
+{"filename": "...", "analysis": "..."}
 
-Errors:
 {"error": "LLM API Quota/Rate limit"}
 {"error": "Invalid PR number"}
 {"error": "Invalid repo name or repo access issue"}
