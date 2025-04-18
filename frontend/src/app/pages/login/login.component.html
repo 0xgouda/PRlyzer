@@ -1,9 +1,25 @@
 <div class="container">
-    <mat-card>
-        <mat-card-title>Login</mat-card-title>
+    <mat-card class="login-card">
+        <mat-card-header>
+            <div mat-card-avatar class="github-avatar">
+                <img src="assets/github.png" alt="GitHub Logo" />
+            </div>
+            <mat-card-title>Welcome Back!</mat-card-title>
+            <mat-card-subtitle>Sign in with GitHub</mat-card-subtitle>
+        </mat-card-header>
+
         <mat-card-content>
-            <p>Login with your GitHub account to be able to use this application to analyze the pull requests of your repository.</p>
-            <a mat-button [href]="loginUrl">Login With GitHub Account</a>
+            <p class="description">
+                Analyze pull requests from your repositories with ease. Just sign in using your GitHub account and
+                you're good to go!
+            </p>
         </mat-card-content>
+
+        <mat-card-actions>
+            <a mat-flat-button color="primary" [href]="loginUrl">
+                <mat-icon>login</mat-icon>
+                Login with GitHub
+            </a>
+        </mat-card-actions>
     </mat-card>
 </div>

@@ -3,19 +3,112 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 1rem;
+    background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+    color: #ffffff;
 
-    mat-card {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+    .login-card {
+        width: 100%;
         max-width: 400px;
-        min-height: 600px;
+        padding: 2rem 1.5rem;
         text-align: center;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        border-radius: 20px;
+        animation: fadeIn 0.8s ease-out;
+        background-color: #1e1e2f;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+
+        mat-card-header {
+            flex-direction: column;
+            align-items: center;
+
+            .github-avatar {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                overflow: hidden;
+                margin-bottom: 1rem;
+
+                img {
+                    width: 100%;
+                    height: auto;
+                }
+            }
+
+            mat-card-title {
+                font-size: 1.8rem;
+                font-weight: 600;
+                color: #fff;
+                margin-bottom: 0.2rem;
+            }
+
+            mat-card-subtitle {
+                font-size: 1rem;
+                color: #aaa;
+            }
+        }
+
+        .description {
+            font-size: 1rem;
+            color: #ccc;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        mat-card-actions {
+            display: flex;
+            justify-content: center;
+
+            a[mat-flat-button] {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                font-weight: 600;
+                padding: 0.75rem 1.5rem;
+                border-radius: 10px;
+                background-color: #24292e;
+                color: #ffffff;
+                transition: background-color 0.3s ease;
+
+                &:hover {
+                    background-color: #444c56;
+                }
+
+                mat-icon {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem 1rem;
 
         mat-card-title {
-            padding: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .description {
+            font-size: 0.95rem;
+        }
+
+        a[mat-flat-button] {
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
         }
     }
 }
