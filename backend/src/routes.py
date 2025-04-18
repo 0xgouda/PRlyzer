@@ -38,7 +38,7 @@ async def pull_request(websocket: WebSocket):
     try:
         PullRequests(**data)
     except:
-        socketErr(websocket, f"Invalid Json Object: {data}")
+        await socketErr(websocket, f"Invalid Json Object: {data}")
         return
         
     github = Github(login_or_token=data["access_token"])
@@ -46,13 +46,13 @@ async def pull_request(websocket: WebSocket):
     try:
         repo = github.get_repo(data["repo_name"], lazy=False)
     except GithubException as e:
-        socketErr(websocket, "Invalid repo name or repo access issue")
+        await socketErr(websocket, "Invalid repo name or repo access issue")
         return
 
     try:
         pr = repo.get_pull(data["pr_number"])
     except GithubException as e:
-        socketErr(websocket, "Invalid PR number")
+        await socketErr(websocket, "Invalid PR number")
         return
 
     files = pr.get_files()[: MAX_NUM_OF_FILES]
@@ -75,7 +75,7 @@ async def pull_request(websocket: WebSocket):
         try:
             response = chat_session.send_message(f"analyze the following diffs in the file named {filename} for 1. bugs & edge cases 2. security issues 3. incorrect implementations of the Pull Request Body provided before, make your answer precise, compact and relevant. original file ```{content}```, diffs ```{file.patch}```, ")
         except Exception as e:
-            socketErr(websocket, f"LLM API Quota/Rate limit")
+            await socketErr(websocket, f"LLM API Quota/Rate limit")
             return
         await websocket.send_json({"fileName": filename, "analysis": response.text})
     await websocket.close()
