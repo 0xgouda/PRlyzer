@@ -30,8 +30,6 @@ async def token_auth(request: Request) -> dict:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) 
 
 
-# TODO: handle & add rate limiting
-# TODO: fine-tune the model & prompts
 @router.websocket("/pull-requests")
 async def pull_request(websocket: WebSocket):
     await websocket.accept()
@@ -60,7 +58,7 @@ async def pull_request(websocket: WebSocket):
     files = pr.get_files()[: MAX_NUM_OF_FILES]
 
     chat_session = model.start_chat()
-    chat_session.send_message(f"My Repo Received A Pull Request with the following body {pr.body}, i am going to send you the files one by one to analyze them for any bugs, errors or incorrect implementations of the ideas provided in Pull Request Body")
+    chat_session.send_message(f"My github Repo Received A Pull Request with the following body {pr.body}, i am going to send you the files one by one to analyze them for 1. bugs & edge cases 2. security issues 3. incorrect implementations of the ideas provided in Pull Request Body")
 
     for file in files:
         filename = file.filename
@@ -75,7 +73,7 @@ async def pull_request(websocket: WebSocket):
         content = file_meta_data.decoded_content
 
         try:
-            response = chat_session.send_message(f"analyze the following diffs in the file named {filename} for any errors, bugs or incorrect implementations of the Pull Request Body, provide only the errors in your output nothing more, original file ```{content}```, diffs ```{file.patch}```, ")
+            response = chat_session.send_message(f"analyze the following diffs in the file named {filename} for 1. bugs & edge cases 2. security issues 3. incorrect implementations of the Pull Request Body provided before, make your answer precise, compact and relevant. original file ```{content}```, diffs ```{file.patch}```, ")
         except Exception as e:
             socketErr(websocket, f"LLM API Quota/Rate limit")
             return
