@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { MatCard, MatCardContent, MatCardTitle, MatCardHeader, MatCardActions, MatCardSubtitle } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../services/auth.service';
 
 
 @Component({
@@ -13,6 +14,10 @@ import { environment } from '../../../environments/environment';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  loginUrl = `${environment.baseUrl}/login`;
-  
+  loginUrl = this.authService.getLoginUrl();
+
+
+  constructor (
+    private authService: AuthService,
+  ) {}
 }
