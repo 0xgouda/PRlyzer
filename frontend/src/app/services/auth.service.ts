@@ -18,6 +18,7 @@ export class AuthService {
   handleLoginCallback(code: string, state: string) {
     const request = this.httpClient.get(environment.baseUrl + '/auth', {
       params: { code, state },
+      withCredentials: true,
     });
     request.subscribe((res) => {
       console.log('Login callback response:', res);
